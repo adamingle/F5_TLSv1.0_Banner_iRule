@@ -1,7 +1,7 @@
-#README
+# README
 
 
-#PURPOSE
+# PURPOSE
 
 The purpose of this script is to notify website users they are using TLSv1.0 or other version of encruption that has been
 deprecated.  This notification can be used in advance of the encryption ciphers being disabled entirely or used indefinately.
@@ -16,14 +16,14 @@ Text format, font, color and background color are also easily changable.
 The javascript is appended to the closing </body> tag in the HTML to provide easy identification an insertion
 into the HTML code, without consideration for inline CSS, HTML body formatting, customizations, etc.
 
-#REQUIREMENTS
+# REQUIREMENTS
 F5 LTM virtual-server must have a client SSL profile attached.
 
-#USAGE
-1.Create a string datagroup named tls_warn and add "tlsv1" to the string varible.
-2.Create an iRule with the attached iRule code.
-3.Modify/Create virtual-server with "Stream" profile enabled.
-4.Apply iRule to virtual-server.
+# USAGE
+1. Create a string datagroup named tls_warn and add "tlsv1" to the string varible.
+2. Create an iRule with the attached iRule code.
+3. Modify/Create virtual-server with "Stream" profile enabled.
+4. Apply iRule to virtual-server.
 
 Test.
 Done.
