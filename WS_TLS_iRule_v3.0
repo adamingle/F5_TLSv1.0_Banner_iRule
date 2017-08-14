@@ -1,0 +1,44 @@
+## TLSv1.0 Alert Banner iRule v3.0 - 08/08/2017
+## Original HTML Script provided by Nathaniel Kincy - 08/08/2017
+
+when CLIENTSSL_HANDSHAKE {
+      set DEBUG 0
+      set tlsExpiring 0
+     
+      set sslVersion [SSL::cipher version]
+      set sslName [SSL::cipher name]
+      ## Log the current session information if DEBUG = 1     
+      if { $DEBUG } { log local0.debug "SSL Cipher Name: $sslName SSL Cipher Version: $sslVersion" }
+      ## Check dg tls_warn to see if it matches the clientssl version, if yes, set tlsExpiring = 1.  
+      ## Else, skip and move on and no other part of the iRule are consequential.
+      if { [class match [ string tolower $sslVersion ] equals /dataGroups/tls_warn ] } {
+            set tlsExpiring 1
+            if { $DEBUG } { log local0.debug "TLS protocol version: $sslVersion tlsExpiring flag set to 1"}
+      }
+      else {
+            if { $DEBUG } { log local0.debug "TLS protocol version $sslVersion allowed, continuing." }
+            return
+      }
+     
+}
+when HTTP_REQUEST {
+    ## Disable the stream filter for all requests
+    STREAM::disable
+   
+    ## LTM does not decompress response content, so if the server has compression enabled
+    ## and it cannot be disabled on the server, we can prevent the server from sending
+    ## a compressed response by removing the compression offerings from the client
+    HTTP::header remove "Accept-Encoding"
+}
+when HTTP_RESPONSE {
+    ## Check if response type is text
+    if { [HTTP::header value Content-Type] contains "text" } {
+      if { $tlsExpiring } {
+        ## Define the stream replacement
+        STREAM::expression {@</body>@<script>document.body.insertAdjacentHTML("afterbegin",'<div class="alert" style="padding: 20px;background-color: #de1a0c; /* Red */color: white;margin-bottom: 15px;"><span style="margin-left: 15px;color: white;font-weight: bold;float: right;font-size: 22px;line-height: 20px;cursor: pointer;transition: 0.3s;" class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span>We have detected that you are using an older browser and need to make you aware that as of September 20, 2017 you will no longer be able to access this site. Please switch to one of these browser versions (or higher): Internet Explorer 11, Edge (any version), Chrome 42, Firefox 31, or Safari 9.</div>');</script></body>@}
+ 
+        ## Enable the stream filter for this response only
+        STREAM::enable
+    }
+    }
+}
