@@ -24,11 +24,6 @@ when CLIENTSSL_HANDSHAKE {
 when HTTP_REQUEST {
     ## Disable the stream filter for all requests
     STREAM::disable
-   
-    ## LTM does not decompress response content, so if the server has compression enabled
-    ## and it cannot be disabled on the server, we can prevent the server from sending
-    ## a compressed response by removing the compression offerings from the client
-    HTTP::header remove "Accept-Encoding"
 }
 when HTTP_RESPONSE {
     ## Check if response type is text
