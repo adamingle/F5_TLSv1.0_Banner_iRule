@@ -22,7 +22,7 @@ F5 LTM virtual-server must have a client SSL profile attached.
 ## USAGE
 1. Create a string datagroup named tls_warn and add "tlsv1" to the string varible.
 2. Create an iRule with the attached iRule code.
-3. Modify/Create virtual-server with "Stream" profile enabled.
+3. Modify/Create virtual-server with "Stream" and "HTTPCompression" profiles enabled.
 4. Apply iRule to virtual-server.
 
 Test.
